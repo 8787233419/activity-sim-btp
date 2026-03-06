@@ -1,0 +1,204 @@
+.file-upload-step {
+  margin-top: 20px;
+}
+
+.file-upload-step h3 {
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 1.3rem;
+}
+
+.step-description {
+  color: #666;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+}
+
+/* ── Slot cards ────────────────────────────────────────── */
+.file-upload-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 18px;
+}
+
+.empty-slots-hint {
+  color: #888;
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 22px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 2px dashed #dee2e6;
+}
+
+.file-upload-item {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  border: 2px dashed #dee2e6;
+  transition: border-color 0.2s;
+}
+
+.file-upload-item:hover {
+  border-color: #667eea;
+}
+
+.file-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Label row with remove (×) button on the right */
+.file-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.file-label {
+  font-weight: 500;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.slot-remove-btn {
+  background: transparent;
+  border: none;
+  color: #aaa;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  line-height: 1;
+  transition: color 0.2s, background 0.2s;
+}
+
+.slot-remove-btn:hover {
+  color: #dc3545;
+  background: #f8d7da;
+}
+
+/* Selected file row */
+.file-selected {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 10px 15px;
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+}
+
+.file-name {
+  color: #28a745;
+  font-size: 0.9rem;
+  flex: 1;
+}
+
+.remove-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.remove-btn:hover {
+  background: #c82333;
+}
+
+/* Hidden input + styled label */
+.file-input-wrapper {
+  position: relative;
+}
+
+.file-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.file-input-label {
+  display: inline-block;
+  background: #667eea;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.file-input-label:hover {
+  background: #5568d3;
+}
+
+/* ── Add File button + dropdown ───────────────────────── */
+.add-file-container {
+  position: relative;
+  display: inline-block;
+}
+
+.add-file-btn {
+  background: white;
+  border: 2px dashed #667eea;
+  color: #667eea;
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.add-file-btn:hover {
+  background: #f0f2ff;
+}
+
+.add-file-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  z-index: 200;
+  min-width: 220px;
+  overflow: hidden;
+}
+
+.add-file-option {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 11px 18px;
+  font-size: 0.9rem;
+  color: #333;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.add-file-option:last-child {
+  border-bottom: none;
+}
+
+.add-file-option:hover {
+  background: #f0f2ff;
+  color: #667eea;
+}
+
+.all-added-note {
+  color: #888;
+  font-size: 0.85rem;
+  margin-top: 6px;
+}
