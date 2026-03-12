@@ -21,6 +21,16 @@ export const filesAPI = {
   list: (projectId) => api.get(`/projects/${projectId}/files`),
 };
 
+export const configsAPI = {
+  upload: (projectId, files) => {
+    const formData = new FormData();
+    Array.from(files).forEach((file) => formData.append('files', file));
+    return api.post(`/projects/${projectId}/upload-configs`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
+};
+
 export const runsAPI = {
   start: (projectId) => api.post(`/projects/${projectId}/run`),
   getStatus: (projectId, runId) => api.get(`/projects/${projectId}/run/status/${runId}`),

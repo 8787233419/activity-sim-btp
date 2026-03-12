@@ -1,0 +1,154 @@
+/* ConfigUploadStep.css */
+
+.config-upload-step {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 8px 0;
+}
+
+.config-upload-step h3 {
+  margin: 0 0 4px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.step-description {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #555;
+  line-height: 1.5;
+}
+
+.step-hint {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.8rem;
+  color: #777;
+}
+
+/* Drop zone */
+.config-dropzone {
+  border: 2px dashed #c5cae9;
+  border-radius: 10px;
+  padding: 28px 20px;
+  text-align: center;
+  cursor: pointer;
+  background: #f8f9ff;
+  transition: border-color 0.2s, background 0.2s;
+  user-select: none;
+}
+
+.config-dropzone:hover,
+.config-dropzone.dragover {
+  border-color: #5c6bc0;
+  background: #ede7f6;
+}
+
+.config-dropzone-icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.config-dropzone p {
+  margin: 4px 0;
+  font-size: 0.875rem;
+  color: #444;
+}
+
+.config-dropzone-hint {
+  color: #999 !important;
+  font-size: 0.78rem !important;
+}
+
+.config-hidden-input {
+  display: none;
+}
+
+/* Staged files */
+.config-staged-list {
+  background: #f4f4f8;
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.config-staged-title {
+  margin: 0 0 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #888;
+}
+
+.config-staged-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+}
+
+.config-staged-dest {
+  font-family: monospace;
+  font-size: 0.78rem;
+  background: #e8eaf6;
+  color: #3949ab;
+  border-radius: 4px;
+  padding: 1px 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.config-staged-name {
+  flex: 1;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.config-staged-remove {
+  background: none;
+  border: none;
+  color: #aaa;
+  cursor: pointer;
+  padding: 0 2px;
+  font-size: 0.85rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.config-staged-remove:hover {
+  color: #e53935;
+}
+
+/* Result banner */
+.config-result {
+  font-size: 0.875rem;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.config-result.success {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.config-result.error {
+  background: #ffebee;
+  color: #c62828;
+}
+
+/* Footer */
+.config-upload-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 4px;
+}

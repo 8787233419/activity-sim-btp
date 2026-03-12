@@ -5,7 +5,8 @@ import SettingsEditor from './components/SettingsEditor';
 import RunManager from './components/RunManager';
 import ResultsPanel from './components/ResultsPanel';
 import FileExplorer from './components/FileExplorer';
-import { projectsAPI, settingsAPI, filesAPI, runsAPI, resultsAPI } from './services/api';
+import ConfigUploader from './components/ConfigUploader';
+import { projectsAPI, settingsAPI, filesAPI, runsAPI, resultsAPI, configsAPI } from './services/api';
 
 function App() {
   const [projects, setProjects] = useState([]);
@@ -156,12 +157,17 @@ function App() {
             <div className="flex-1 overflow-hidden p-6">
               {activeTab === 'dashboard' && (
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
-                  <div className="lg:col-span-2">
+                  <div className="lg:col-span-2 space-y-4 overflow-y-auto">
                     <RunManager
                       projectId={currentProject}
                       onRun={handleStartRun}
                       onStop={handleStopRun}
                       runStatus={runStatus}
+                    />
+                    <ConfigUploader
+                      projectId={currentProject}
+                      files={files}
+                      onUploadDone={loadProjectData}
                     />
                   </div>
                   <div className="overflow-y-auto">

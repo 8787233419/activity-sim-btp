@@ -35,8 +35,37 @@
 .upload-dialog-header h2 {
   color: #333;
   font-size: 1.5rem;
-  margin: 0;
+  margin: 0 0 6px;
 }
+
+/* Step indicator */
+.upload-step-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.step-dot {
+  font-size: 0.78rem;
+  color: #aaa;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: #f1f1f1;
+  transition: background 0.2s, color 0.2s;
+}
+
+.step-dot.active {
+  background: #d4edda;
+  color: #155724;
+}
+
+.step-sep {
+  color: #ccc;
+  font-size: 0.85rem;
+}
+
 
 .upload-close-btn {
   background: none;

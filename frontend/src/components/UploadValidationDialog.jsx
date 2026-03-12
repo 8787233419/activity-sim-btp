@@ -1,11 +1,12 @@
 import { useState } from 'react'
+import ConfigUploadStep from './ConfigUploadStep'
 import FileUploadStep from './FileUploadStep'
 import ValidationStep from './ValidationStep'
 import { saveFilesToProfile } from '../utils/fileStorage'
 import './UploadValidationDialog.css'
 
 function UploadValidationDialog({ profileId, profileName, onClose, onSuccess }) {
-  const [step, setStep] = useState(1)
+  const [step, setStep] = useState(0)   // 0 = config upload, 1 = CSV upload, 2 = validate
   const [files, setFiles] = useState({})      // { [key]: File }
   const [slots, setSlots] = useState([])      // ordered array of active key strings
   const [validationResults, setValidationResults] = useState({})
@@ -142,13 +143,31 @@ function UploadValidationDialog({ profileId, profileName, onClose, onSuccess }) 
     <div className="upload-dialog-overlay" onClick={onClose}>
       <div className="upload-dialog-content" onClick={(e) => e.stopPropagation()}>
         <div className="upload-dialog-header">
-          <h2>Upload &amp; Validate: {profileName}</h2>
+          <div>
+            <h2>Upload &amp; Validate: {profileName}</h2>
+            <div className="upload-step-indicator">
+              <span className={step >= 0 ? 'step-dot active' : 'step-dot'}>1. Config</span>
+              <span className="step-sep">›</span>
+              <span className={step >= 1 ? 'step-dot active' : 'step-dot'}>2. Data</span>
+              <span className="step-sep">›</span>
+              <span className={step >= 2 ? 'step-dot active' : 'step-dot'}>3. Validate</span>
+            </div>
+          </div>
           <button type="button" className="upload-close-btn" onClick={onClose}>
             ×
           </button>
         </div>
 
         <div className="upload-dialog-body">
+          {/* ── Step 0: Config upload ── */}
+          {step === 0 && (
+            <ConfigUploadStep
+              profileId={profileId}
+              onUploadDone={() => setStep(1)}
+              onSkip={() => setStep(1)}
+            />
+          )}
+
           {step === 1 && (
             <>
               <FileUploadStep
@@ -158,8 +177,8 @@ function UploadValidationDialog({ profileId, profileName, onClose, onSuccess }) 
               />
 
               <div className="upload-dialog-footer">
-                <button type="button" className="upload-btn-secondary" onClick={onClose}>
-                  Cancel
+                <button type="button" className="upload-btn-secondary" onClick={() => setStep(0)}>
+                  ← Back
                 </button>
                 <button
                   type="button"

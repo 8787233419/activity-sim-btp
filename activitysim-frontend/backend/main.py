@@ -18,7 +18,7 @@ import sys
 from typing import Optional, List
 
 # Add ActivitySim source to path if not installed
-ACTIVITYSIM_SRCDIR = r"c:\Users\ayush\btp\activitysim"
+ACTIVITYSIM_SRCDIR = r"c:\Users\ayush\btp\activity-sim-btp\activitysim"
 if ACTIVITYSIM_SRCDIR not in sys.path:
     sys.path.append(ACTIVITYSIM_SRCDIR)
 
@@ -247,10 +247,11 @@ async def list_files(project_id: str):
         files = {
             "configs": [],
             "data": [],
-            "output": []
+            "output": [],
+            "data_model": []
         }
         
-        for folder in ["configs", "data", "output"]:
+        for folder in ["configs", "data", "output", "data_model"]:
             folder_path = project_dir / folder
             if folder_path.exists():
                 files[folder] = [f.name for f in folder_path.iterdir() if f.is_file()]
@@ -319,6 +320,66 @@ async def upload_csv_files(project_id: str, files: List[UploadFile] = File(...))
         raise
     except Exception as e:
         logger.error(f"Error uploading files: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@app.post("/api/projects/{project_id}/upload-configs")
+async def upload_config_files(project_id: str, files: List[UploadFile] = File(...)):
+    """
+    Upload config/data_model files supplied by the user.
+
+    Routing rules:
+      - *.yaml / *.yml                 → projects/<id>/configs/
+      - *.py                           → projects/<id>/data_model/
+      - anything else                  → rejected with HTTP 400
+
+    Uploading a file that already exists silently overwrites it so the
+    user can iterate on their schemas without having to delete first.
+    """
+    try:
+        project_dir = PROJECTS_DIR / project_id
+        if not project_dir.exists():
+            _initialize_project_dir(project_id)
+
+        saved = []
+        for file in files:
+            suffix = Path(file.filename).suffix.lower()
+
+            # .py files → data_model/, everything else (yaml, csv, etc.) → configs/
+            if suffix == ".py":
+                dest_dir = project_dir / "data_model"
+            else:
+                dest_dir = project_dir / "configs"
+
+            dest_dir.mkdir(parents=True, exist_ok=True)
+            dest_path = dest_dir / file.filename
+
+            content = await file.read()
+            with open(dest_path, "wb") as f:
+                f.write(content)
+
+            folder_name = "data_model" if suffix == ".py" else "configs"
+            saved.append({
+                "filename": file.filename,
+                "size": len(content),
+                "folder": folder_name
+            })
+            logger.info(
+                f"Config upload: saved '{file.filename}' ({len(content)} B) "
+                f"to {folder_name}/ for project {project_id}"
+            )
+
+        return {
+            "project_id": project_id,
+            "uploaded": saved,
+            "message": f"Successfully uploaded {len(saved)} config file(s)"
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error uploading config files: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
 
