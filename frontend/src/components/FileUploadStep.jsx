@@ -7,6 +7,7 @@ const KNOWN_FILE_TYPES = [
   { key: 'persons',         label: 'persons.csv' },
   { key: 'land_use',        label: 'land_use.csv' },
   { key: 'example_hwy_data', label: 'example_hwy_data.csv' },
+  { key: 'override_hh_ids', label: 'override_hh_ids.csv' },
 ]
 
 /**
