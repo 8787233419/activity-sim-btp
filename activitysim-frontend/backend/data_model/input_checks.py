@@ -14,7 +14,7 @@ import os
 import re
 import sys
 from typing import List, Optional
-from enum import Enum as e
+import enums as e
 import numpy as np
 import openmatrix as omx
 import pandas as pd
