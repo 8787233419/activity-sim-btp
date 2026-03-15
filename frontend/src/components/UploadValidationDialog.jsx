@@ -136,8 +136,18 @@ function UploadValidationDialog({ profileId, profileName, onClose, onSuccess }) 
   }
 
   const handleSaveAndClose = async () => {
-    await saveFilesToProfile(profileId, files)
-    onSuccess()
+    try {
+      const response = await fetch(`/api/projects/${profileId}/execute`, { method: 'POST' });
+      if (!response.ok) {
+        throw new Error('Failed to start model execution');
+      }
+      await saveFilesToProfile(profileId, files);
+      alert('Model simulation started successfully!');
+      onSuccess();
+    } catch (err) {
+      console.error(err);
+      alert('Error starting model: ' + err.message);
+    }
   }
 
   return (

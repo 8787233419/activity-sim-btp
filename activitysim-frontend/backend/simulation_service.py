@@ -10,9 +10,12 @@ import subprocess
 import asyncio
 import os
 import re
+import sys
 from pathlib import Path
 from typing import Optional, Dict, Any
 from datetime import datetime
+
+ACTIVITYSIM_SRCDIR = str(Path(__file__).parent.parent.parent / "activitysim")
 
 from models import (
     SimulationExecutionStatus,
@@ -80,18 +83,18 @@ class SimulationService:
         try:
             # Build ActivitySim command
             cmd = self._build_activitysim_command()
-            logger.info(f"Running command: {' '.join(cmd)}")
+            logger.info(f"Running command: {cmd}")
             
             # Start the simulation process
             log_file = self.logs_dir / f"activitysim_{execution_id}.log"
-            
             with open(log_file, 'w') as log_f:
                 self.process = subprocess.Popen(
                     cmd,
                     stdout=log_f,
                     stderr=subprocess.STDOUT,
-                    cwd=str(self.project_dir),
-                    text=True
+                    cwd=ACTIVITYSIM_SRCDIR,
+                    text=True,
+                    shell=True
                 )
             
             # Monitor the simulation
@@ -114,16 +117,17 @@ class SimulationService:
             
             return status
     
-    def _build_activitysim_command(self) -> list:
+    def _build_activitysim_command(self) -> str:
         """Build the ActivitySim command line"""
-        # Use activitysim CLI
-        cmd = [
-            "activitysim",
-            "run",
-            "-c", str(self.config_dir),
-            "-d", str(self.data_dir),
-            "-o", str(self.output_dir)
-        ]
+        venv_activate = str("./.venv/Scripts/activate.bat")
+        
+        # When shell=True in Windows, passing a single string ensures operators like '&&' work correctly.
+        cmd = (
+            f'call "{venv_activate}" && activitysim run '
+            f'-c "{self.config_dir}" '
+            f'-d "{self.data_dir}" '
+            f'-o "{self.output_dir}"'
+        )
         
         return cmd
     
