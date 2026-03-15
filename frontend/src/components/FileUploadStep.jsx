@@ -3,9 +3,9 @@ import './FileUploadStep.css'
 
 // All recognised file-type options the user can choose from
 const KNOWN_FILE_TYPES = [
-  { key: 'households',      label: 'households.csv' },
-  { key: 'persons',         label: 'persons.csv' },
-  { key: 'land_use',        label: 'land_use.csv' },
+  { key: 'households', label: 'households.csv' },
+  { key: 'persons', label: 'persons.csv' },
+  { key: 'land_use', label: 'land_use.csv' },
   { key: 'example_hwy_data', label: 'example_hwy_data.csv' },
   { key: 'override_hh_ids', label: 'override_hh_ids.csv' },
 ]
@@ -46,18 +46,94 @@ function FileUploadStep({ files, slots, onFilesSelected }) {
     event.target.value = ''
   }
 
+  // Handle folder or multiple file uploads
+  const handleBulkUpload = (event) => {
+    const uploadedFiles = Array.from(event.target.files)
+
+    if (uploadedFiles.length === 0) return
+
+    // For ZIP files, just add it under a special 'zip_archive' key
+    if (uploadedFiles.length === 1 && uploadedFiles[0].name.toLowerCase().endsWith('.zip')) {
+      const newSlots = [...slots]
+      if (!newSlots.includes('zip_archive')) newSlots.push('zip_archive')
+      onFilesSelected({ ...files, zip_archive: uploadedFiles[0] }, newSlots)
+      event.target.value = ''
+      return
+    }
+
+    // For folder uploads (webkitdirectory), match files to known slots by name
+    const newFiles = { ...files }
+    const newSlots = [...slots]
+    let filesAdded = 0
+
+    uploadedFiles.forEach(file => {
+      // Find a matching KNOWN_FILE_TYPE by filename
+      const match = KNOWN_FILE_TYPES.find(t => t.label.toLowerCase() === file.name.toLowerCase())
+
+      if (match) {
+        newFiles[match.key] = file
+        if (!newSlots.includes(match.key)) newSlots.push(match.key)
+        filesAdded++
+      } else {
+        // Fallback for unknown files: use the exact filename as key (without extension)
+        const customKey = file.name.substring(0, file.name.lastIndexOf('.')) || file.name
+        newFiles[customKey] = file
+        if (!newSlots.includes(customKey)) newSlots.push(customKey)
+        filesAdded++
+      }
+    })
+
+    if (filesAdded > 0) {
+      onFilesSelected(newFiles, newSlots)
+    } else {
+      alert('No valid files found in the selected folder.')
+    }
+
+    event.target.value = ''
+  }
+
   return (
     <div className="file-upload-step">
-      <h3>Upload CSV Files</h3>
+      <h3>Upload Data Files</h3>
       <p className="step-description">
-        Add the CSV files your project needs and upload each one.
+        Add the data files your project needs and upload each one.
       </p>
+
+      <div className="bulk-upload-actions" style={{ marginBottom: '1.5rem', display: 'flex', gap: '1rem' }}>
+        <div className="file-input-wrapper">
+          <input
+            type="file"
+            webkitdirectory="true"
+            directory="true"
+            multiple
+            id="folder-upload"
+            className="file-input"
+            onChange={handleBulkUpload}
+          />
+          <label htmlFor="folder-upload" className="file-input-label" style={{ backgroundColor: '#2563eb', color: 'white', padding: '0.5rem 1rem', borderRadius: '4px', cursor: 'pointer', display: 'inline-block' }}>
+            Upload Folder
+          </label>
+        </div>
+
+        <div className="file-input-wrapper">
+          <input
+            type="file"
+            accept=".zip"
+            id="zip-upload"
+            className="file-input"
+            onChange={handleBulkUpload}
+          />
+          <label htmlFor="zip-upload" className="file-input-label" style={{ backgroundColor: '#4f46e5', color: 'white', padding: '0.5rem 1rem', borderRadius: '4px', cursor: 'pointer', display: 'inline-block' }}>
+            Upload ZIP
+          </label>
+        </div>
+      </div>
 
       {/* File slot cards */}
       <div className="file-upload-list">
         {slots.length === 0 && (
           <div className="empty-slots-hint">
-            Click <strong>+ Add File</strong> below to add a file slot.
+            Upload a <strong>Folder</strong>, a <strong>ZIP</strong>, or click <strong>+ Add File</strong> below to add individual file slots.
           </div>
         )}
 
@@ -69,7 +145,7 @@ function FileUploadStep({ files, slots, onFilesSelected }) {
             <div key={key} className="file-upload-item">
               <div className="file-info">
                 <div className="file-label-row">
-                  <label className="file-label">{typeInfo?.label ?? `${key}.csv`}</label>
+                  <label className="file-label">{typeInfo?.label ?? key}</label>
                   <button
                     type="button"
                     className="slot-remove-btn"
@@ -96,7 +172,6 @@ function FileUploadStep({ files, slots, onFilesSelected }) {
                     <input
                       ref={(el) => { fileInputRefs.current[key] = el }}
                       type="file"
-                      accept=".csv"
                       className="file-input"
                       id={`file-${key}`}
                       onChange={(e) => handleFileChange(key, e)}

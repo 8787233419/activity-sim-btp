@@ -18,7 +18,7 @@ function UploadValidationDialog({ profileId, profileName, onClose, onSuccess }) 
   // Derive the file list for ValidationStep from current slots
   const fileList = slots.map((key) => ({
     key,
-    label: `${key}.csv`,
+    label: files[key] ? files[key].name : key,
   }))
 
   // Called by FileUploadStep whenever files OR slots change
@@ -55,7 +55,8 @@ function UploadValidationDialog({ profileId, profileName, onClose, onSuccess }) 
       // 1. Upload files to backend
       const formData = new FormData()
       Object.entries(files).forEach(([key, file]) => {
-        formData.append('files', file, `${key}.csv`)
+        // Use the original filename to preserve .zip or other extensions
+        formData.append('files', file, file.name)
       })
 
       const uploadResponse = await fetch(`/api/projects/${profileId}/upload-csv`, {

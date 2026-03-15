@@ -15,7 +15,7 @@ from datetime import datetime
 from collections import defaultdict
 
 # Add ActivitySim source to path if not installed
-ACTIVITYSIM_SRCDIR = r"c:\Users\ayush\btp\activity-sim-btp\activitysim"
+ACTIVITYSIM_SRCDIR = str(Path(__file__).parent.parent.parent / "activitysim")
 if ACTIVITYSIM_SRCDIR not in sys.path:
     sys.path.append(ACTIVITYSIM_SRCDIR)
 

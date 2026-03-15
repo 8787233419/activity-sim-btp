@@ -15,10 +15,11 @@ import subprocess
 import os
 import shutil
 import sys
+import zipfile
 from typing import Optional, List
 
 # Add ActivitySim source to path if not installed
-ACTIVITYSIM_SRCDIR = r"c:\Users\ayush\btp\activity-sim-btp\activitysim"
+ACTIVITYSIM_SRCDIR = str(Path(__file__).parent.parent.parent / "activitysim")
 if ACTIVITYSIM_SRCDIR not in sys.path:
     sys.path.append(ACTIVITYSIM_SRCDIR)
 
@@ -267,11 +268,13 @@ async def list_files(project_id: str):
 @app.post("/api/projects/{project_id}/upload-csv", response_model=UploadResponse)
 async def upload_csv_files(project_id: str, files: List[UploadFile] = File(...)):
     """
-    Upload CSV files to project data directory
+    Upload CSV files to project data directory.
+    Supports either individual CSV files, a single ZIP file containing CSVs,
+    or a folder upload (which sends multiple files including non-CSV files).
     
     Args:
         project_id: Project identifier
-        files: List of CSV files to upload
+        files: List of files to upload (can be CSVs or a ZIP file)
         
     Returns:
         UploadResponse with details of uploaded files
@@ -288,27 +291,77 @@ async def upload_csv_files(project_id: str, files: List[UploadFile] = File(...))
         uploaded_files = []
         
         for file in files:
-            # Validate file extension
-            if not file.filename.endswith('.csv'):
-                raise HTTPException(
-                    status_code=400,
-                    detail=f"Invalid file type: {file.filename}. Only CSV files are allowed."
-                )
+            if not file.filename:
+                continue
+                
+            # Extract base filename to handle paths from folder uploads
+            filename = Path(file.filename).name
+            
+            # Handle ZIP folder upload
+            if filename.lower().endswith('.zip'):
+                zip_path = data_dir / filename
+                with open(zip_path, 'wb') as f:
+                    content = await file.read()
+                    f.write(content)
+                
+                # Extract files from zip
+                try:
+                    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                        for zip_info in zip_ref.filelist:
+                            # Skip directories
+                            if zip_info.is_dir():
+                                continue
+                            
+                            # Skip common hidden files (optional, but good practice)
+                            extracted_filename = Path(zip_info.filename).name
+                            if extracted_filename.startswith('.'):
+                                continue
+                            
+                            # Read content and write directly to data_dir
+                            with zip_ref.open(zip_info.filename) as zf, open(data_dir / extracted_filename, 'wb') as f:
+                                shutil.copyfileobj(zf, f)
+                            
+                            # Get size
+                            size = (data_dir / extracted_filename).stat().st_size
+                            
+                            uploaded_files.append(UploadFileResponse(
+                                filename=extracted_filename,
+                                size=size,
+                                path=f"data/{extracted_filename}",
+                                uploaded_at=datetime.now()
+                            ))
+                            logger.info(f"Extracted {extracted_filename} ({size} bytes) from zip to {project_id}")
+                except zipfile.BadZipFile:
+                    logger.error(f"Invalid zip file uploaded: {file.filename}")
+                finally:
+                    # Clean up the zip file
+                    if zip_path.exists():
+                        try:
+                            zip_path.unlink()
+                        except Exception as e:
+                            logger.error(f"Failed to delete zip file {zip_path}: {e}")
+                
+                continue
+            
+            # Skip common hidden files (optional, but good practice)
+            if filename.startswith('.'):
+                logger.info(f"Skipping hidden file in folder upload: {file.filename}")
+                continue
             
             # Save file
-            file_path = data_dir / file.filename
+            file_path = data_dir / filename
             with open(file_path, 'wb') as f:
                 content = await file.read()
                 f.write(content)
             
             uploaded_files.append(UploadFileResponse(
-                filename=file.filename,
+                filename=filename,
                 size=len(content),
-                path=f"data/{file.filename}",
+                path=f"data/{filename}",
                 uploaded_at=datetime.now()
             ))
             
-            logger.info(f"Uploaded {file.filename} ({len(content)} bytes) to {project_id}")
+            logger.info(f"Uploaded {filename} ({len(content)} bytes) to {project_id}")
         
         return UploadResponse(
             project_id=project_id,
