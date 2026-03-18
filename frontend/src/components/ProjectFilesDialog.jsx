@@ -59,14 +59,15 @@ function ProjectFilesDialog({ projectId, projectName, onClose }) {
   const activeFiles = tabs.find(t => t.key === activeTab)?.files || []
 
   return (
-    <div className="pfd-overlay" onClick={onClose}>
+    <div className="pfd-overlay">
       <div className="pfd-dialog" onClick={e => e.stopPropagation()}>
         <div className="pfd-header">
-          <div>
-            <h2 className="pfd-title">{projectName || projectId}</h2>
-            <p className="pfd-subtitle">Browse and download project files</p>
-          </div>
-          <button className="pfd-close-btn" onClick={onClose}>✕</button>
+          <button className="pfd-back-btn" onClick={onClose}>
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            Back to Projects
+          </button>
+          <h2 className="pfd-title">{projectName || projectId}</h2>
+          <p className="pfd-subtitle">{projectId}</p>
         </div>
 
         {loading && (
@@ -88,9 +89,8 @@ function ProjectFilesDialog({ projectId, projectName, onClose }) {
             <div className="pfd-stats">
               {tabs.map(t => (
                 <div key={t.key} className={`pfd-stat ${t.key}`}>
-                  <span className="pfd-stat-icon">{t.icon}</span>
-                  <span className="pfd-stat-value">{t.files.length}</span>
                   <span className="pfd-stat-label">{t.label}</span>
+                  <span className="pfd-stat-value">{t.files.length}</span>
                 </div>
               ))}
             </div>
@@ -137,7 +137,8 @@ function ProjectFilesDialog({ projectId, projectName, onClose }) {
                             className="pfd-download-btn"
                             onClick={() => handleDownload(file.download_url, file.filename)}
                           >
-                            ⬇ Download
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            Download
                           </button>
                         </td>
                       </tr>

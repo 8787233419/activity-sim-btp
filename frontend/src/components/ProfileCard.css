@@ -1,14 +1,15 @@
 .profile-card {
-  background: white;
+  background: rgba(30, 30, 55, 0.7);
   border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
+  padding: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
 }
 
 .profile-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+  background: rgba(40, 40, 65, 0.8);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
 }
 
 .profile-card-header {
@@ -19,8 +20,9 @@
 }
 
 .profile-card-header h3 {
-  color: #333;
-  font-size: 1.2rem;
+  color: #e8e8f0;
+  font-size: 1.3rem;
+  font-weight: 600;
   margin: 0;
 }
 
@@ -30,72 +32,80 @@
 }
 
 .upload-btn {
-  background: #28a745;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
+  background: rgba(76, 141, 255, 0.1);
+  border: 1px solid rgba(76, 141, 255, 0.2);
+  color: #4c8dff;
+  padding: 6px 14px;
+  border-radius: 8px;
   font-size: 0.85rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s;
 }
 
 .upload-btn:hover {
-  background: #218838;
+  background: rgba(76, 141, 255, 0.2);
+  border-color: #4c8dff;
 }
 
 .delete-btn {
-  background: #dc3545;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  padding: 6px 14px;
+  border-radius: 8px;
   font-size: 0.85rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s;
 }
 
 .delete-btn:hover {
-  background: #c82333;
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
 }
 
 .profile-card-body {
-  color: #666;
+  color: #a0a0c0;
 }
 
 .profile-date {
   font-size: 0.9rem;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
+  color: #6a6a90;
 }
 
 .profile-btn-row {
   display: flex;
-  gap: 8px;
+  gap: 10px;
 }
 
 .toggle-details-btn {
-  background: #667eea;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #a0a0c0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 16px;
+  border-radius: 8px;
   font-size: 0.9rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s;
   flex: 1;
 }
 
 .toggle-details-btn:hover {
-  background: #5568d3;
+  background: rgba(255, 255, 255, 0.1);
+  color: #e8e8f0;
 }
 
 .show-project-files-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #7c5cfc 0%, #4c8dff 100%);
   color: white;
   border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
+  padding: 10px 16px;
+  border-radius: 8px;
   font-size: 0.9rem;
+  font-weight: 600;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
   flex: 1;
@@ -104,17 +114,17 @@
 
 .show-project-files-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 4px 12px rgba(124, 92, 252, 0.3);
 }
 
 .profile-files {
-  margin-top: 15px;
-  padding-top: 15px;
-  border-top: 1px solid #dee2e6;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .no-files {
-  color: #999;
+  color: #6a6a90;
   font-size: 0.9rem;
   text-align: center;
   padding: 10px;
@@ -126,10 +136,11 @@
 }
 
 .files-list li {
-  padding: 8px 12px;
-  background: #f8f9fa;
+  padding: 10px 16px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.02);
   margin-bottom: 8px;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 0.9rem;
-  color: #495057;
+  color: #e8e8f0;
 }

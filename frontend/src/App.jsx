@@ -4,6 +4,7 @@ import ProfileCard from './components/ProfileCard'
 import UploadValidationDialog from './components/UploadValidationDialog'
 import ProjectFilesDialog from './components/ProjectFilesDialog'
 import { getProfiles } from './utils/fileStorage'
+import companyLogo from '../logo4.jpg'
 import './App.css'
 
 function App() {
@@ -45,6 +46,13 @@ function App() {
 
   return (
     <div className="app">
+      <div className="company-header">
+        <div className="company-logo-placeholder">
+          <img src={companyLogo} alt="ActivitySim Logo" className="company-logo-img" />
+        </div>
+        <h2 className="company-name">ActivitySim</h2>
+      </div>
+
       <div className="app-header">
         <h1>Profile Manager</h1>
         <button className="create-btn" onClick={handleCreateProfile}>

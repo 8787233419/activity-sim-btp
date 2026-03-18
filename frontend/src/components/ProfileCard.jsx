@@ -21,18 +21,19 @@ function ProfileCard({ profile, onUpdate, onUpload, onShowFiles }) {
     <div className="profile-card">
       <div className="profile-card-header">
         <h3>{profile.name}</h3>
-        <div className="profile-actions">
-          <button
-            type="button"
-            className="upload-btn"
-            onClick={onUpload}
-          >
-            Upload and Validate
-          </button>
-          <button type="button" className="delete-btn" onClick={handleDelete}>
-            Delete
-          </button>
-        </div>
+      </div>
+
+      <div className="profile-actions">
+        <button
+          type="button"
+          className="upload-btn"
+          onClick={onUpload}
+        >
+          Upload and Validate
+        </button>
+        <button type="button" className="delete-btn" onClick={handleDelete}>
+          Delete
+        </button>
       </div>
 
       <div className="profile-card-body">

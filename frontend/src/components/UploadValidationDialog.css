@@ -1,10 +1,8 @@
 .upload-dialog-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  inset: 0;
+  background: rgba(10, 10, 20, 0.8);
+  backdrop-filter: blur(8px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -13,13 +11,14 @@
 }
 
 .upload-dialog-content {
-  background: white;
-  border-radius: 12px;
+  background: #161622;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
   width: 100%;
-  max-width: 800px; /* Slightly wider for validation tables */
+  max-width: 800px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
 }
@@ -28,64 +27,67 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 30px;
-  border-bottom: 1px solid #dee2e6;
+  padding: 24px 30px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .upload-dialog-header h2 {
-  color: #333;
+  color: #e8e8f0;
   font-size: 1.5rem;
-  margin: 0 0 6px;
+  font-weight: 700;
+  margin: 0 0 8px;
 }
 
 /* Step indicator */
 .upload-step-indicator {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   margin-top: 4px;
 }
 
 .step-dot {
   font-size: 0.78rem;
-  color: #aaa;
-  font-weight: 500;
-  padding: 2px 8px;
+  color: #6a6a90;
+  font-weight: 600;
+  padding: 4px 10px;
   border-radius: 12px;
-  background: #f1f1f1;
-  transition: background 0.2s, color 0.2s;
+  background: rgba(255, 255, 255, 0.05);
+  transition: all 0.2s;
 }
 
 .step-dot.active {
-  background: #d4edda;
-  color: #155724;
+  background: rgba(76, 141, 255, 0.15);
+  color: #4c8dff;
+  border: 1px solid rgba(76, 141, 255, 0.3);
 }
 
 .step-sep {
-  color: #ccc;
+  color: #6a6a90;
   font-size: 0.85rem;
+  opacity: 0.5;
 }
 
-
 .upload-close-btn {
-  background: none;
+  background: rgba(255, 255, 255, 0.05);
   border: none;
-  font-size: 2rem;
-  color: #666;
+  font-size: 1.2rem;
+  color: #a0a0c0;
   cursor: pointer;
   line-height: 1;
   padding: 0;
-  width: 30px;
-  height: 30px;
+  width: 34px;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
-  transition: background 0.2s;
+  border-radius: 8px;
+  transition: all 0.2s;
 }
 
 .upload-close-btn:hover {
-  background: #f8f9fa;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
 }
 
 .upload-dialog-body {
@@ -96,46 +98,48 @@
 .upload-dialog-footer {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
-  margin-top: 30px;
-  padding-top: 20px;
-  border-top: 1px solid #dee2e6;
+  gap: 12px;
+  padding: 20px 30px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .upload-btn-primary {
-  background: linear-gradient(135deg, #28a745 0%, #218838 100%); /* Green for upload */
+  background: linear-gradient(135deg, #7c5cfc 0%, #4c8dff 100%);
   color: white;
   border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
+  padding: 12px 28px;
+  border-radius: 10px;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .upload-btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(40, 167, 69, 0.4);
+  box-shadow: 0 6px 16px rgba(124, 92, 252, 0.4);
 }
 
 .upload-btn-primary:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .upload-btn-secondary {
-  background: #6c757d;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #a0a0c0;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 12px 28px;
+  border-radius: 10px;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s;
 }
 
-.upload-btn-secondary:hover {
-  background: #5a6268;
+.upload-btn-secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e8e8f0;
 }
