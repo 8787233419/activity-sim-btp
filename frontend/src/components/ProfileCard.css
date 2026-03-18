@@ -68,6 +68,11 @@
   margin-bottom: 15px;
 }
 
+.profile-btn-row {
+  display: flex;
+  gap: 8px;
+}
+
 .toggle-details-btn {
   background: #667eea;
   color: white;
@@ -77,11 +82,29 @@
   font-size: 0.9rem;
   cursor: pointer;
   transition: background 0.2s;
-  width: 100%;
+  flex: 1;
 }
 
 .toggle-details-btn:hover {
   background: #5568d3;
+}
+
+.show-project-files-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  flex: 1;
+  white-space: nowrap;
+}
+
+.show-project-files-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
 
 .profile-files {

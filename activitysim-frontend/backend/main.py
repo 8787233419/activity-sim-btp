@@ -6,6 +6,7 @@ FastAPI server for ActivitySim web interface
 from fastapi import FastAPI, WebSocket, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, FileResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
 import logging
 import json
 from datetime import datetime
@@ -61,6 +62,10 @@ app.add_middleware(
 BASE_DIR = Path(__file__).parent.parent
 PROJECTS_DIR = BASE_DIR / "projects"
 PROJECTS_DIR.mkdir(exist_ok=True)
+
+# Static files directory
+STATIC_DIR = Path(__file__).parent / "static"
+STATIC_DIR.mkdir(exist_ok=True)
 
 # Global state
 active_runs = {}
@@ -751,6 +756,130 @@ async def download_output_file(project_id: str, filename: str):
 
 
 
+# ============= INPUT DATA FILE DOWNLOAD =============
+
+@app.get("/api/projects/{project_id}/data/{filename}")
+async def download_data_file(project_id: str, filename: str):
+    """
+    Download a specific input data file
+    
+    Args:
+        project_id: Project identifier
+        filename: Name of the file to download
+        
+    Returns:
+        File download response
+    """
+    try:
+        file_path = PROJECTS_DIR / project_id / "data" / filename
+        
+        if not file_path.exists():
+            raise HTTPException(status_code=404, detail="File not found")
+        
+        # Prevent directory traversal
+        if not file_path.resolve().is_relative_to((PROJECTS_DIR / project_id / "data").resolve()):
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        return FileResponse(
+            path=file_path,
+            filename=filename,
+            media_type='application/octet-stream'
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error downloading data file: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============= COMBINED FILE LISTING =============
+
+@app.get("/api/projects/{project_id}/all-files")
+async def list_all_project_files(project_id: str):
+    """
+    List all input data and output files for a project with sizes and download URLs.
+    
+    Args:
+        project_id: Project identifier
+        
+    Returns:
+        Combined listing of input and output files
+    """
+    try:
+        project_dir = PROJECTS_DIR / project_id
+        if not project_dir.exists():
+            raise HTTPException(status_code=404, detail="Project not found")
+        
+        # Read project name from metadata
+        project_name = project_id
+        metadata_file = project_dir / "metadata.json"
+        if metadata_file.exists():
+            with open(metadata_file, encoding='utf-8') as f:
+                metadata = json.load(f)
+                project_name = metadata.get("name", project_id)
+        
+        def collect_files(folder: str, url_prefix: str):
+            folder_path = project_dir / folder
+            files = []
+            if folder_path.exists():
+                for fp in folder_path.iterdir():
+                    if fp.is_file():
+                        stat = fp.stat()
+                        files.append({
+                            "filename": fp.name,
+                            "size": stat.st_size,
+                            "modified_at": datetime.fromtimestamp(stat.st_mtime).isoformat(),
+                            "download_url": f"/api/projects/{project_id}/{url_prefix}/{fp.name}"
+                        })
+            # Sort by filename
+            files.sort(key=lambda x: x["filename"])
+            return files
+        
+        input_files = collect_files("data", "data")
+        output_files = collect_files("output", "outputs")
+        config_files = collect_files("configs", "configs")
+        
+        return {
+            "project_id": project_id,
+            "project_name": project_name,
+            "input_files": input_files,
+            "output_files": output_files,
+            "config_files": config_files
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error listing all files: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/projects/{project_id}/configs/{filename}")
+async def download_config_file(project_id: str, filename: str):
+    """Download a specific config file"""
+    try:
+        file_path = PROJECTS_DIR / project_id / "configs" / filename
+        
+        if not file_path.exists():
+            raise HTTPException(status_code=404, detail="File not found")
+        
+        if not file_path.resolve().is_relative_to((PROJECTS_DIR / project_id / "configs").resolve()):
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        return FileResponse(
+            path=file_path,
+            filename=filename,
+            media_type='application/octet-stream'
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error downloading config file: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ============= RUN MANAGEMENT =============
 
 @app.post("/api/projects/{project_id}/run")
@@ -894,6 +1023,10 @@ async def simulate_run(run_id: str, project_dir: Path):
 async def health():
     """Health check endpoint"""
     return {"status": "healthy", "timestamp": datetime.now().isoformat()}
+
+
+# Mount static files LAST so API routes take priority
+app.mount("/static", StaticFiles(directory=str(STATIC_DIR), html=True), name="static")
 
 
 if __name__ == "__main__":

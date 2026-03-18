@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import CreateProfileDialog from './components/CreateProfileDialog'
 import ProfileCard from './components/ProfileCard'
 import UploadValidationDialog from './components/UploadValidationDialog'
+import ProjectFilesDialog from './components/ProjectFilesDialog'
 import { getProfiles } from './utils/fileStorage'
 import './App.css'
 
@@ -9,6 +10,7 @@ function App() {
   const [profiles, setProfiles] = useState([])
   const [showCreateDialog, setShowCreateDialog] = useState(false)
   const [uploadingProfile, setUploadingProfile] = useState(null)
+  const [browsingProfile, setBrowsingProfile] = useState(null)
 
   useEffect(() => {
     loadProfiles()
@@ -37,6 +39,10 @@ function App() {
     loadProfiles()
   }
 
+  const handleShowFiles = (profile) => {
+    setBrowsingProfile(profile)
+  }
+
   return (
     <div className="app">
       <div className="app-header">
@@ -58,6 +64,7 @@ function App() {
               profile={profile}
               onUpdate={loadProfiles}
               onUpload={() => handleUploadStart(profile)}
+              onShowFiles={handleShowFiles}
             />
           ))
         )}
@@ -78,8 +85,17 @@ function App() {
           onSuccess={handleUploadSuccess}
         />
       )}
+
+      {browsingProfile && (
+        <ProjectFilesDialog
+          projectId={browsingProfile.id}
+          projectName={browsingProfile.name}
+          onClose={() => setBrowsingProfile(null)}
+        />
+      )}
     </div>
   )
 }
 
 export default App
+

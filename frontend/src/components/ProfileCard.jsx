@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { getProfileFiles, deleteProfile } from '../utils/fileStorage'
 import './ProfileCard.css'
-function ProfileCard({ profile, onUpdate, onUpload }) {
+function ProfileCard({ profile, onUpdate, onUpload, onShowFiles }) {
   const [files, setFiles] = useState([])
   const [showDetails, setShowDetails] = useState(false)
 
@@ -40,19 +40,15 @@ function ProfileCard({ profile, onUpdate, onUpload }) {
           Created: {new Date(profile.createdAt).toLocaleDateString()}
         </p>
 
-        <button
-          type="button"
-          className="toggle-details-btn"
-          onClick={() => {
-            const nextShowDetails = !showDetails
-            setShowDetails(nextShowDetails)
-            if (nextShowDetails) {
-              loadFiles()
-            }
-          }}
-        >
-          {showDetails ? 'Hide' : 'Show'} Files
-        </button>
+        <div className="profile-btn-row">
+          <button
+            type="button"
+            className="show-project-files-btn"
+            onClick={() => onShowFiles && onShowFiles(profile)}
+          >
+            Browse Project Files
+          </button>
+        </div>
 
         {showDetails && (
           <div className="profile-files">

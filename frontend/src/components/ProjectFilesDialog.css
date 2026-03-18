@@ -1,0 +1,331 @@
+/* ============= OVERLAY ============= */
+.pfd-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+/* ============= DIALOG ============= */
+.pfd-dialog {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 900px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: pfd-slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes pfd-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============= HEADER ============= */
+.pfd-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 24px 28px 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+}
+
+.pfd-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0 0 2px;
+}
+
+.pfd-subtitle {
+  font-size: 0.85rem;
+  opacity: 0.85;
+  margin: 0;
+}
+
+.pfd-close-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.pfd-close-btn:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+/* ============= STATS ROW ============= */
+.pfd-stats {
+  display: flex;
+  gap: 12px;
+  padding: 20px 28px;
+  border-bottom: 1px solid #eee;
+}
+
+.pfd-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: #f5f5f8;
+  flex: 1;
+}
+
+.pfd-stat.input {
+  background: #f0ecff;
+}
+
+.pfd-stat.output {
+  background: #e6f9f7;
+}
+
+.pfd-stat.config {
+  background: #fff8e6;
+}
+
+.pfd-stat-icon {
+  font-size: 1.2rem;
+}
+
+.pfd-stat-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.pfd-stat-label {
+  font-size: 0.75rem;
+  color: #777;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+/* ============= TABS ============= */
+.pfd-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 12px 28px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.pfd-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #777;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  margin-bottom: -1px;
+}
+
+.pfd-tab:hover {
+  color: #555;
+}
+
+.pfd-tab.active {
+  color: #667eea;
+  border-bottom-color: #667eea;
+}
+
+.pfd-tab-count {
+  background: #eee;
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.pfd-tab.active .pfd-tab-count {
+  background: #667eea;
+  color: #fff;
+}
+
+/* ============= FILE LIST ============= */
+.pfd-file-list {
+  overflow-y: auto;
+  flex: 1;
+  padding: 0;
+}
+
+.pfd-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pfd-table thead th {
+  position: sticky;
+  top: 0;
+  background: #fafafa;
+  padding: 10px 20px;
+  text-align: left;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #999;
+  font-weight: 600;
+  border-bottom: 1px solid #eee;
+}
+
+.pfd-table thead th:last-child {
+  text-align: center;
+  width: 110px;
+}
+
+.pfd-table tbody tr {
+  transition: background 0.15s;
+}
+
+.pfd-table tbody tr:hover {
+  background: #f8f7ff;
+}
+
+.pfd-table tbody td {
+  padding: 10px 20px;
+  font-size: 0.88rem;
+  border-bottom: 1px solid #f2f2f2;
+  color: #555;
+}
+
+.pfd-table tbody td:last-child {
+  text-align: center;
+}
+
+.pfd-filename {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  color: #333 !important;
+}
+
+.pfd-file-icon {
+  font-size: 0.85rem;
+}
+
+.pfd-file-size {
+  font-variant-numeric: tabular-nums;
+  color: #888 !important;
+}
+
+.pfd-file-date {
+  color: #aaa !important;
+  font-size: 0.82rem !important;
+}
+
+/* ============= DOWNLOAD BUTTON ============= */
+.pfd-download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 14px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  white-space: nowrap;
+}
+
+.pfd-download-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.pfd-download-btn:active {
+  transform: translateY(0);
+}
+
+/* ============= LOADING / ERROR / EMPTY ============= */
+.pfd-loading {
+  text-align: center;
+  padding: 60px 20px;
+  color: #999;
+}
+
+.pfd-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid #eee;
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: pfd-spin 0.7s linear infinite;
+  margin: 0 auto 12px;
+}
+
+@keyframes pfd-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.pfd-error {
+  text-align: center;
+  padding: 40px 20px;
+  color: #d44;
+}
+
+.pfd-error button {
+  margin-top: 12px;
+  padding: 8px 20px;
+  background: #667eea;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.pfd-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+}
+
+/* ============= RESPONSIVE ============= */
+@media (max-width: 600px) {
+  .pfd-dialog {
+    max-height: 90vh;
+  }
+
+  .pfd-stats {
+    flex-direction: column;
+  }
+
+  .pfd-table thead th:nth-child(3),
+  .pfd-table tbody td:nth-child(3) {
+    display: none;
+  }
+}
