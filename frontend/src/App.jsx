@@ -3,6 +3,7 @@ import CreateProfileDialog from './components/CreateProfileDialog'
 import ProfileCard from './components/ProfileCard'
 import UploadValidationDialog from './components/UploadValidationDialog'
 import ProjectFilesDialog from './components/ProjectFilesDialog'
+import SimulationProgressDialog from './components/SimulationProgressDialog'
 import { getProfiles } from './utils/fileStorage'
 import companyLogo from '../logo4.jpg'
 import './App.css'
@@ -12,6 +13,7 @@ function App() {
   const [showCreateDialog, setShowCreateDialog] = useState(false)
   const [uploadingProfile, setUploadingProfile] = useState(null)
   const [browsingProfile, setBrowsingProfile] = useState(null)
+  const [activeSimulation, setActiveSimulation] = useState(null)
 
   useEffect(() => {
     loadProfiles()
@@ -35,9 +37,13 @@ function App() {
     setUploadingProfile(profile)
   }
 
-  const handleUploadSuccess = () => {
+  const handleUploadSuccess = (executionId) => {
+    const prof = uploadingProfile
     setUploadingProfile(null)
     loadProfiles()
+    if (executionId && prof) {
+      setActiveSimulation({ projectId: prof.id, projectName: prof.name, executionId })
+    }
   }
 
   const handleShowFiles = (profile) => {
@@ -99,6 +105,20 @@ function App() {
           projectId={browsingProfile.id}
           projectName={browsingProfile.name}
           onClose={() => setBrowsingProfile(null)}
+        />
+      )}
+
+      {activeSimulation && (
+        <SimulationProgressDialog
+          projectId={activeSimulation.projectId}
+          projectName={activeSimulation.projectName}
+          executionId={activeSimulation.executionId}
+          onClose={() => setActiveSimulation(null)}
+          onShowFiles={() => {
+            const tempProfile = { id: activeSimulation.projectId, name: activeSimulation.projectName }
+            setActiveSimulation(null)
+            setBrowsingProfile(tempProfile)
+          }}
         />
       )}
     </div>

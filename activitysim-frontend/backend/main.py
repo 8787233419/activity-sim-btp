@@ -955,9 +955,15 @@ async def websocket_endpoint(websocket: WebSocket, run_id: str):
     websocket_connections[run_id] = websocket
     
     try:
+        # Send initial state immediately upon connection
+        if run_id in simulation_executions:
+            await websocket.send_json(simulation_executions[run_id].model_dump(mode='json'))
+        elif run_id in active_runs:
+            await websocket.send_json(active_runs[run_id])
+            
         while True:
-            if run_id in active_runs:
-                await websocket.send_json(active_runs[run_id])
+            # Updates are pushed via the update_status callback in execute_simulation
+            # This loop just keeps the connection alive
             await asyncio.sleep(1)
     except Exception as e:
         logger.error(f"WebSocket error: {e}")

@@ -210,58 +210,51 @@ class SimulationService:
     
     def _parse_log_line(self, line: str) -> Optional[SimulationLogEntry]:
         """Parse a log line into a SimulationLogEntry"""
-        # ActivitySim log format: TIMESTAMP - LEVEL - MESSAGE
-        # Example: 2024-01-01 12:00:00,123 - INFO - activitysim.core.pipeline - Running model: initialize_landuse
-        
-        # Try to extract log level
+        # ActivitySim log format in this project: [timestamp] LEVEL: message
         level = "INFO"
-        if " - ERROR - " in line:
+        if " ERROR:" in line or " ERROR " in line:
             level = "ERROR"
-        elif " - WARNING - " in line:
+        elif " WARNING:" in line or " WARNING " in line:
             level = "WARNING"
-        elif " - DEBUG - " in line:
+        elif " DEBUG:" in line or " DEBUG " in line:
             level = "DEBUG"
         
-        # Extract message (everything after the last " - ")
-        parts = line.split(" - ")
-        if len(parts) >= 3:
-            message = " - ".join(parts[2:])
+        # Extract message
+        match = re.search(r'\] \w+:\s*(.*)', line)
+        if match:
+            message = match.group(1)
         else:
             message = line
         
         return SimulationLogEntry(
             timestamp=datetime.now(),
             level=level,
-            message=message[:200]  # Limit message length
+            message=message[:250]  # Limit message length slightly higher
         )
     
     def _is_step_completion(self, line: str) -> bool:
         """Check if log line indicates step completion"""
         step_indicators = [
-            "Running model:",
-            "Completed model:",
-            "Writing table:",
-            "Loaded table:"
+            "#run_model running step",
+            "loaded ",
+            "writing skim cache"
         ]
         return any(indicator in line for indicator in step_indicators)
     
     def _extract_step_name(self, line: str) -> str:
         """Extract step name from log line"""
-        # Try to extract model name
-        if "Running model:" in line:
-            match = re.search(r"Running model:\s+(\w+)", line)
+        if "#run_model running step" in line:
+            match = re.search(r"#run_model running step\s+(\w+)", line)
             if match:
-                return f"Running {match.group(1)}"
+                return f"Running {match.group(1).replace('_', ' ').capitalize()}"
         
-        if "Completed model:" in line:
-            match = re.search(r"Completed model:\s+(\w+)", line)
+        if "loaded " in line:
+            match = re.search(r"loaded\s+(\w+)", line)
             if match:
-                return f"Completed {match.group(1)}"
+                return f"Loaded {match.group(1).capitalize()}"
         
-        if "Writing table:" in line:
-            match = re.search(r"Writing table:\s+(\w+)", line)
-            if match:
-                return f"Writing {match.group(1)}"
+        if "writing skim cache" in line:
+            return "Writing skim cache"
         
         return "Processing..."
     

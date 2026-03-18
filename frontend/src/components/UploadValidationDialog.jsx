@@ -141,9 +141,10 @@ function UploadValidationDialog({ profileId, profileName, onClose, onSuccess }) 
       if (!response.ok) {
         throw new Error('Failed to start model execution');
       }
+      const data = await response.json();
       await saveFilesToProfile(profileId, files);
       alert('Model simulation started successfully!');
-      onSuccess();
+      onSuccess(data.execution_id);
     } catch (err) {
       console.error(err);
       alert('Error starting model: ' + err.message);
