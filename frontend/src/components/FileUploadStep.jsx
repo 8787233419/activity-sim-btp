@@ -18,7 +18,7 @@ const KNOWN_FILE_TYPES = [
  *   slots           : string[]          ordered list of active slot keys
  *   onFilesSelected : (files, slots) => void
  */
-function FileUploadStep({ files, slots, onFilesSelected }) {
+function FileUploadStep({ files, slots, existingFiles = [], onFilesSelected }) {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const fileInputRefs = useRef({})
 
@@ -128,6 +128,8 @@ function FileUploadStep({ files, slots, onFilesSelected }) {
           </label>
         </div>
       </div>
+
+
 
       {/* File slot cards */}
       <div className="file-upload-list">

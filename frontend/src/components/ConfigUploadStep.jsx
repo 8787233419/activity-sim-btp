@@ -14,7 +14,7 @@ import './ConfigUploadStep.css'
  *   onUploadDone   : ()=>void – called after a successful upload
  *   onSkip         : ()=>void – called when user wants to continue without uploading
  */
-function ConfigUploadStep({ profileId, onUploadDone, onSkip }) {
+function ConfigUploadStep({ profileId, existingFiles = [], existingDataModels = [], onUploadDone, onSkip }) {
   const [dragOver, setDragOver] = useState(false)
   const [stagedFiles, setStagedFiles] = useState([]) // File[]
   const [uploading, setUploading] = useState(false)
@@ -111,6 +111,8 @@ function ConfigUploadStep({ profileId, onUploadDone, onSkip }) {
         />
       </div>
 
+
+
       {/* Staged files list */}
       {stagedFiles.length > 0 && (
         <div className="config-staged-list">
@@ -142,7 +144,7 @@ function ConfigUploadStep({ profileId, onUploadDone, onSkip }) {
       {/* Footer buttons */}
       <div className="config-upload-footer">
         <button type="button" className="upload-btn-secondary" onClick={onSkip}>
-          Skip (use defaults)
+          {(existingFiles.length > 0 || existingDataModels.length > 0) ? 'Continue with existing configs only' : 'Skip (use defaults)'}
         </button>
         <button
           type="button"
