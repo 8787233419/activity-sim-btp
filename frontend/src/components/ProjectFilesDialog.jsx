@@ -243,7 +243,7 @@ function ProjectFilesDialog({ projectId, projectName, onClose }) {
                               onClick={() => handleEdit(file.download_url, file.filename, 'csv')}
                               disabled={isDownloadingForEdit}
                             >
-                              Edit CSV
+                              Edit
                             </button>
                           )}
                           {activeTab !== 'output' && !file.filename.toLowerCase().endsWith('.csv') && !file.filename.toLowerCase().endsWith('.h5') && !file.filename.toLowerCase().endsWith('.zip') && (
@@ -252,7 +252,7 @@ function ProjectFilesDialog({ projectId, projectName, onClose }) {
                               onClick={() => handleEdit(file.download_url, file.filename, 'text')}
                               disabled={isDownloadingForEdit}
                             >
-                              Edit Text
+                              Edit
                             </button>
                           )}
                           <button

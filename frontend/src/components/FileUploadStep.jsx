@@ -163,7 +163,7 @@ function FileUploadStep({ files, slots, existingFiles = [], onFilesSelected }) {
                 </div>
 
                 {file ? (
-                  <div className="file-selected">
+                  <div className="file-selected" style={{ gap: '1rem' }}>
                     <span className="file-name">✓ {file.name}</span>
                     {file.name.toLowerCase().endsWith('.csv') ? (
                       <button
@@ -172,7 +172,7 @@ function FileUploadStep({ files, slots, existingFiles = [], onFilesSelected }) {
                         style={{ marginLeft: '1rem', padding: '0.2rem 0.6rem', fontSize: '0.8rem' }}
                         onClick={() => { setEditingFileKey(key); setEditingType('csv'); }}
                       >
-                        Edit CSV
+                        Edit
                       </button>
                     ) : (!file.name.toLowerCase().endsWith('.h5') && !file.name.toLowerCase().endsWith('.zip') && (
                       <button
@@ -181,7 +181,7 @@ function FileUploadStep({ files, slots, existingFiles = [], onFilesSelected }) {
                         style={{ marginLeft: '1rem', padding: '0.2rem 0.6rem', fontSize: '0.8rem' }}
                         onClick={() => { setEditingFileKey(key); setEditingType('text'); }}
                       >
-                        Edit Text
+                        Edit
                       </button>
                     ))}
                     <button
