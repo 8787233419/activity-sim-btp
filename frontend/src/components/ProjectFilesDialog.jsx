@@ -1,11 +1,19 @@
 import { useState, useEffect } from 'react'
 import './ProjectFilesDialog.css'
+import CsvEditorDialog from './CsvEditorDialog'
+import TextEditorDialog from './TextEditorDialog'
 
 function ProjectFilesDialog({ projectId, projectName, onClose }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [data, setData] = useState(null)
   const [activeTab, setActiveTab] = useState('input')
+  const [editingFile, setEditingFile] = useState(null)
+  const [editingType, setEditingType] = useState('csv')
+  const [isDownloadingForEdit, setIsDownloadingForEdit] = useState(false)
+  const [inputFilesChanged, setInputFilesChanged] = useState(false)
+  const [isValidating, setIsValidating] = useState(false)
+  const [validationResult, setValidationResult] = useState(null)
 
   useEffect(() => {
     fetchFiles()
@@ -50,6 +58,73 @@ function ProjectFilesDialog({ projectId, projectName, onClose }) {
     document.body.removeChild(a)
   }
 
+  const handleEdit = async (downloadUrl, filename, type = 'csv') => {
+    setIsDownloadingForEdit(true)
+    try {
+      const res = await fetch(downloadUrl)
+      if (!res.ok) throw new Error("Failed to fetch file for editing")
+      const blob = await res.blob()
+      const mime = type === 'csv' ? 'text/csv' : 'text/plain'
+      const file = new File([blob], filename, { type: mime })
+      setEditingType(type)
+      setEditingFile(file)
+    } catch (e) {
+      alert("Error loading file: " + e.message)
+    } finally {
+      setIsDownloadingForEdit(false)
+    }
+  }
+
+  const handleSaveEditedFile = async (newFile) => {
+    try {
+      const formData = new FormData()
+      formData.append('files', newFile, newFile.name)
+
+      const endpoint = activeTab === 'config'
+        ? `/api/projects/${projectId}/upload-configs`
+        : `/api/projects/${projectId}/upload-csv`;
+
+      // Upload the changes
+      const uploadResponse = await fetch(endpoint, {
+        method: 'POST',
+        body: formData,
+      })
+      if (!uploadResponse.ok) {
+        throw new Error('Failed to save changes')
+      }
+      setEditingFile(null)
+      setInputFilesChanged(true)
+      setValidationResult({ status: 'success', message: 'File saved. Please validate changes.' })
+      fetchFiles()
+    } catch (e) {
+      alert(e.message)
+    }
+  }
+
+  const handleValidate = async () => {
+    setIsValidating(true)
+    setValidationResult(null)
+    try {
+      const validateResponse = await fetch(`/api/projects/${projectId}/validate`, {
+        method: 'POST',
+      })
+      if (!validateResponse.ok) {
+        throw new Error('Validation failed')
+      }
+      const result = await validateResponse.json()
+      if (result.overall_status === 'passed' || result.ready_for_simulation) {
+        setValidationResult({ status: 'success', message: '✓ Files validated successfully!' })
+        setInputFilesChanged(false)
+      } else {
+        setValidationResult({ status: 'error', message: '⚠️ Validation failed or has warnings. Please check the files.' })
+      }
+    } catch (e) {
+      setValidationResult({ status: 'error', message: '⚠️ Validation error: ' + e.message })
+    } finally {
+      setIsValidating(false)
+    }
+  }
+
   const tabs = [
     { key: 'input', label: 'Input Data', icon: '📥', files: data?.input_files || [] },
     { key: 'output', label: 'Output Files', icon: '📤', files: data?.output_files || [] },
@@ -61,13 +136,42 @@ function ProjectFilesDialog({ projectId, projectName, onClose }) {
   return (
     <div className="pfd-overlay">
       <div className="pfd-dialog" onClick={e => e.stopPropagation()}>
-        <div className="pfd-header">
-          <button className="pfd-back-btn" onClick={onClose}>
-            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-            Back to Projects
-          </button>
-          <h2 className="pfd-title">{projectName || projectId}</h2>
-          <p className="pfd-subtitle">{projectId}</p>
+        <div className="pfd-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div>
+            <button className="pfd-back-btn" onClick={onClose}>
+              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              Back to Projects
+            </button>
+            <h2 className="pfd-title">{projectName || projectId}</h2>
+            <p className="pfd-subtitle">{projectId}</p>
+          </div>
+          <div style={{ marginTop: '2.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            {validationResult && (
+              <span style={{
+                color: validationResult.status === 'success' ? '#10b981' : '#ef4444',
+                fontSize: '0.9rem',
+                fontWeight: '500'
+              }}>
+                {validationResult.message}
+              </span>
+            )}
+            <button
+              onClick={handleValidate}
+              disabled={!inputFilesChanged || isValidating}
+              style={{
+                padding: '0.5rem 1rem',
+                borderRadius: '6px',
+                background: (!inputFilesChanged || isValidating) ? '#334155' : '#2563eb',
+                color: (!inputFilesChanged || isValidating) ? '#94a3b8' : 'white',
+                border: 'none',
+                cursor: (!inputFilesChanged || isValidating) ? 'not-allowed' : 'pointer',
+                fontWeight: '600',
+                transition: 'all 0.2s'
+              }}
+            >
+              {isValidating ? 'Validating...' : '✓ Validate Changes'}
+            </button>
+          </div>
         </div>
 
         {loading && (
@@ -132,7 +236,25 @@ function ProjectFilesDialog({ projectId, projectName, onClose }) {
                         </td>
                         <td className="pfd-file-size">{formatBytes(file.size)}</td>
                         <td className="pfd-file-date">{formatDate(file.modified_at)}</td>
-                        <td>
+                        <td style={{ display: 'flex', gap: '0.5rem' }}>
+                          {activeTab !== 'output' && file.filename.toLowerCase().endsWith('.csv') && (
+                            <button
+                              className="pfd-download-btn"
+                              onClick={() => handleEdit(file.download_url, file.filename, 'csv')}
+                              disabled={isDownloadingForEdit}
+                            >
+                              Edit CSV
+                            </button>
+                          )}
+                          {activeTab !== 'output' && !file.filename.toLowerCase().endsWith('.csv') && !file.filename.toLowerCase().endsWith('.h5') && !file.filename.toLowerCase().endsWith('.zip') && (
+                            <button
+                              className="pfd-download-btn"
+                              onClick={() => handleEdit(file.download_url, file.filename, 'text')}
+                              disabled={isDownloadingForEdit}
+                            >
+                              Edit Text
+                            </button>
+                          )}
                           <button
                             className="pfd-download-btn"
                             onClick={() => handleDownload(file.download_url, file.filename)}
@@ -150,6 +272,21 @@ function ProjectFilesDialog({ projectId, projectName, onClose }) {
           </>
         )}
       </div>
+
+      {editingFile && editingType === 'csv' && (
+        <CsvEditorDialog
+          file={editingFile}
+          onClose={() => setEditingFile(null)}
+          onSave={handleSaveEditedFile}
+        />
+      )}
+      {editingFile && editingType === 'text' && (
+        <TextEditorDialog
+          file={editingFile}
+          onClose={() => setEditingFile(null)}
+          onSave={handleSaveEditedFile}
+        />
+      )}
     </div>
   )
 }
