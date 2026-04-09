@@ -793,6 +793,118 @@ async def download_data_file(project_id: str, filename: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# ============= OMX DATA FILE VIEWING =============
+
+@app.get("/api/projects/{project_id}/omx-info")
+async def get_omx_info(project_id: str, filename: str):
+    """
+    Get metadata for an openmatrix (.omx) file
+    """
+    try:
+        data_dir = PROJECTS_DIR / project_id / "data"
+        file_path = data_dir / filename
+        
+        # fallbacks
+        if not file_path.exists():
+            file_path = PROJECTS_DIR / project_id / "output" / filename
+            if not file_path.exists():
+                file_path = PROJECTS_DIR / project_id / "configs" / filename
+        
+        if not file_path.exists():
+            raise HTTPException(status_code=404, detail="File not found")
+            
+        import openmatrix as omx
+        f = omx.open_file(str(file_path), 'r')
+        matrices = f.list_matrices()
+        shape_raw = f.shape()
+        shape = [int(x) for x in shape_raw] if shape_raw else []
+        
+        matrix_details = []
+        for m_name in matrices:
+            m = f[m_name]
+            m_shape_raw = getattr(m, 'shape', shape_raw)
+            m_shape = [int(x) for x in m_shape_raw] if m_shape_raw else shape
+            matrix_details.append({
+                "name": m_name,
+                "shape": m_shape
+            })
+            
+        f.close()
+        
+        return {
+            "filename": filename,
+            "overall_shape": shape,
+            "matrices": matrix_details
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error reading OMX metadata: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/projects/{project_id}/omx-data")
+async def get_omx_data(project_id: str, filename: str, matrix: str):
+    """
+    Get a chunk of data from an openmatrix (.omx) file slice
+    """
+    try:
+        data_dir = PROJECTS_DIR / project_id / "data"
+        file_path = data_dir / filename
+        
+        # fallbacks
+        if not file_path.exists():
+            file_path = PROJECTS_DIR / project_id / "output" / filename
+            if not file_path.exists():
+                file_path = PROJECTS_DIR / project_id / "configs" / filename
+                
+        if not file_path.exists():
+            raise HTTPException(status_code=404, detail="File not found")
+            
+        import openmatrix as omx
+        import numpy as np
+        
+        f = omx.open_file(str(file_path), 'r')
+        
+        if matrix not in f.list_matrices():
+            f.close()
+            raise HTTPException(status_code=404, detail=f"Matrix {matrix} not found in file")
+            
+        m = f[matrix]
+        m_shape_raw = getattr(m, 'shape', f.shape())
+        shape = [int(x) for x in m_shape_raw] if m_shape_raw else []
+        
+        # Limit rows/cols
+        end_row = shape[0]if len(shape) > 0 else 0
+        end_col = shape[1] if len(shape) > 1 else 0
+        
+        try:
+            data_slice = m[0:end_row, 0:end_col]
+        except Exception as e:
+            f.close()
+            raise Exception(f"Failed to extract slice: {e}")
+            
+        if isinstance(data_slice, np.ndarray):
+            # Convert NaNs/Infs for JSON
+            data_list = np.nan_to_num(data_slice, nan=0.0).tolist()
+        else:
+            data_list = []
+            
+        f.close()
+        
+        return {
+            "matrix": matrix,
+            "shape": shape,
+            "slice_returned": [end_row, end_col],
+            "data": data_list
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error reading OMX data slice: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ============= COMBINED FILE LISTING =============
 
 @app.get("/api/projects/{project_id}/all-files")
