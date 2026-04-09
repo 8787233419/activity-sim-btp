@@ -164,6 +164,9 @@ async def list_projects():
                 if metadata_file.exists():
                     with open(metadata_file, encoding='utf-8') as f:
                         projects.append(json.load(f))
+        
+        # Sort by creation date descending
+        projects.sort(key=lambda x: x.get('created_at', ''), reverse=True)
         return {"projects": projects}
     except Exception as e:
         logger.error(f"Error listing projects: {e}")
@@ -212,6 +215,24 @@ async def get_project(project_id: str):
         return {"project": project}
     except Exception as e:
         logger.error(f"Error getting project: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.delete("/api/projects/{project_id}")
+async def delete_project(project_id: str):
+    """Delete a project and all its files"""
+    try:
+        project_dir = PROJECTS_DIR / project_id
+        if not project_dir.exists():
+            raise HTTPException(status_code=404, detail="Project not found")
+        
+        shutil.rmtree(project_dir)
+        logger.info(f"Deleted project {project_id}")
+        return {"message": f"Project {project_id} deleted successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting project: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
