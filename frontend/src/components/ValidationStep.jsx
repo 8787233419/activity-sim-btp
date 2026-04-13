@@ -5,6 +5,7 @@ function ValidationStep({
   files,
   validationResults,
   isValidating,
+  isRunning,
   allValid,
   onValidate,
   onReupload,
@@ -96,10 +97,21 @@ function ValidationStep({
         {allValid && (
           <button
             type="button"
-            className="btn-success"
             onClick={onStartModel}
+            disabled={isValidating || isRunning}
+            style={{
+              padding: '0.5rem 1rem',
+              borderRadius: '6px',
+              background: (isValidating || isRunning) ? '#334155' : '#10b981',
+              color: (isValidating || isRunning) ? '#94a3b8' : 'white',
+              border: 'none',
+              cursor: (isValidating || isRunning) ? 'not-allowed' : 'pointer',
+              fontWeight: '600',
+              transition: 'all 0.2s',
+              marginLeft: '1rem'
+            }}
           >
-            ✓ Start Model
+            {isRunning ? 'Launching...' : '🚀 Run Model'}
           </button>
         )}
       </div>

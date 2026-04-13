@@ -2,17 +2,19 @@ import { useState, useEffect } from 'react'
 import './ProjectFilesDialog.css'
 import CsvEditorDialog from './CsvEditorDialog'
 import TextEditorDialog from './TextEditorDialog'
+import OmxViewerDialog from './OmxViewerDialog'
 
-function ProjectFilesDialog({ projectId, projectName, onClose }) {
+function ProjectFilesDialog({ projectId, projectName, onClose, onRunModel }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [data, setData] = useState(null)
   const [activeTab, setActiveTab] = useState('input')
   const [editingFile, setEditingFile] = useState(null)
-  const [editingType, setEditingType] = useState('csv')
+  const [editingType, setEditingType] = useState('csv') // 'csv', 'text', 'omx'
   const [isDownloadingForEdit, setIsDownloadingForEdit] = useState(false)
   const [inputFilesChanged, setInputFilesChanged] = useState(false)
   const [isValidating, setIsValidating] = useState(false)
+  const [isRunning, setIsRunning] = useState(false)
   const [validationResult, setValidationResult] = useState(null)
 
   useEffect(() => {
@@ -125,6 +127,25 @@ function ProjectFilesDialog({ projectId, projectName, onClose }) {
     }
   }
 
+  const handleRunModel = async () => {
+    setIsRunning(true)
+    setError(null)
+    try {
+      const response = await fetch(`/api/projects/${projectId}/execute`, { method: 'POST' });
+      if (!response.ok) {
+        throw new Error('Failed to start model execution');
+      }
+      const executionData = await response.json();
+      if (onRunModel) {
+        onRunModel(executionData.execution_id);
+      }
+    } catch (err) {
+      alert('Error starting model: ' + err.message);
+    } finally {
+      setIsRunning(false)
+    }
+  }
+
   const tabs = [
     { key: 'input', label: 'Input Data', icon: '📥', files: data?.input_files || [] },
     { key: 'output', label: 'Output Files', icon: '📤', files: data?.output_files || [] },
@@ -170,6 +191,23 @@ function ProjectFilesDialog({ projectId, projectName, onClose }) {
               }}
             >
               {isValidating ? 'Validating...' : '✓ Validate Changes'}
+            </button>
+            <button
+              onClick={handleRunModel}
+              disabled={isValidating || isRunning || inputFilesChanged}
+              style={{
+                padding: '0.5rem 1rem',
+                borderRadius: '6px',
+                background: (isValidating || isRunning || inputFilesChanged) ? '#334155' : '#10b981',
+                color: (isValidating || isRunning || inputFilesChanged) ? '#94a3b8' : 'white',
+                border: 'none',
+                cursor: (isValidating || isRunning || inputFilesChanged) ? 'not-allowed' : 'pointer',
+                fontWeight: '600',
+                transition: 'all 0.2s'
+              }}
+              title={inputFilesChanged ? "Validate your changes first before running." : "Launch model using existing files"}
+            >
+              {isRunning ? 'Launching...' : '🚀 Run Model'}
             </button>
           </div>
         </div>
@@ -237,23 +275,64 @@ function ProjectFilesDialog({ projectId, projectName, onClose }) {
                         <td className="pfd-file-size">{formatBytes(file.size)}</td>
                         <td className="pfd-file-date">{formatDate(file.modified_at)}</td>
                         <td style={{ display: 'flex', gap: '0.5rem' }}>
-                          {activeTab !== 'output' && file.filename.toLowerCase().endsWith('.csv') && (
+                          {file.filename.toLowerCase().endsWith('.csv') && (
                             <button
                               className="pfd-download-btn"
                               onClick={() => handleEdit(file.download_url, file.filename, 'csv')}
                               disabled={isDownloadingForEdit}
                             >
-                              Edit
+                              {activeTab === 'output' ? 'View' : 'View / Edit'}
                             </button>
                           )}
-                          {activeTab !== 'output' && !file.filename.toLowerCase().endsWith('.csv') && !file.filename.toLowerCase().endsWith('.h5') && !file.filename.toLowerCase().endsWith('.zip') && (
+                          {!file.filename.toLowerCase().endsWith('.csv') && !file.filename.toLowerCase().endsWith('.h5') && !file.filename.toLowerCase().endsWith('.zip') && !file.filename.toLowerCase().endsWith('.omx') && (
                             <button
                               className="pfd-download-btn"
                               onClick={() => handleEdit(file.download_url, file.filename, 'text')}
                               disabled={isDownloadingForEdit}
                             >
-                              Edit
+                              {activeTab === 'output' ? 'View' : 'View / Edit'}
                             </button>
+                          )}
+                          {file.filename.toLowerCase().endsWith('.omx') && (
+                            <>
+                              <button
+                                className="pfd-download-btn"
+                                onClick={() => {
+                                  setEditingType('omx');
+                                  setEditingFile({ name: file.filename });
+                                }}
+                              >
+                                View
+                              </button>
+                              {activeTab !== 'output' && (
+                                <>
+                                  <button
+                                    className="pfd-download-btn"
+                                    onClick={() => document.getElementById(`replace-omx-${file.filename}`).click()}
+                                    disabled={isDownloadingForEdit}
+                                  >
+                                    Replace
+                                  </button>
+                                  <input
+                                    type="file"
+                                    id={`replace-omx-${file.filename}`}
+                                    style={{ display: 'none' }}
+                                    accept=".omx,.h5"
+                                    onChange={async (e) => {
+                                      const newFileRaw = e.target.files[0];
+                                      if (!newFileRaw) return;
+                                      try {
+                                        const replacementFile = new File([newFileRaw], file.filename, { type: newFileRaw.type || 'application/octet-stream' });
+                                        await handleSaveEditedFile(replacementFile);
+                                        e.target.value = ''; // Reset input
+                                      } catch (err) {
+                                        alert("Replacement failed: " + err.message);
+                                      }
+                                    }}
+                                  />
+                                </>
+                              )}
+                            </>
                           )}
                           <button
                             className="pfd-download-btn"
@@ -277,14 +356,21 @@ function ProjectFilesDialog({ projectId, projectName, onClose }) {
         <CsvEditorDialog
           file={editingFile}
           onClose={() => setEditingFile(null)}
-          onSave={handleSaveEditedFile}
+          onSave={activeTab === 'output' ? null : handleSaveEditedFile}
         />
       )}
       {editingFile && editingType === 'text' && (
         <TextEditorDialog
           file={editingFile}
           onClose={() => setEditingFile(null)}
-          onSave={handleSaveEditedFile}
+          onSave={activeTab === 'output' ? null : handleSaveEditedFile}
+        />
+      )}
+      {editingFile && editingType === 'omx' && (
+        <OmxViewerDialog
+          file={editingFile}
+          projectId={projectId}
+          onClose={() => setEditingFile(null)}
         />
       )}
     </div>

@@ -1,19 +1,36 @@
 import { useState } from 'react'
-import { getProfileFiles, deleteProfile } from '../utils/fileStorage'
 import './ProfileCard.css'
 function ProfileCard({ profile, onUpdate, onUpload, onShowFiles }) {
   const [files, setFiles] = useState([])
   const [showDetails, setShowDetails] = useState(false)
 
-  const loadFiles = () => {
-    const profileFiles = getProfileFiles(profile.id)
-    setFiles(profileFiles)
+  const loadFiles = async () => {
+    try {
+      const response = await fetch(`/api/projects/${profile.id}/files`)
+      if (response.ok) {
+        const data = await response.json()
+        const allFiles = [...(data.configs || []), ...(data.data || []), ...(data.output || []), ...(data.data_model || [])]
+        setFiles(allFiles)
+      }
+    } catch (e) {
+      console.error('Error loading files:', e)
+    }
   }
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (window.confirm(`Are you sure you want to delete "${profile.name}"?`)) {
-      deleteProfile(profile.id)
-      onUpdate()
+      try {
+        const response = await fetch(`/api/projects/${profile.id}`, { method: 'DELETE' })
+        if (response.ok) {
+          onUpdate()
+        } else {
+          const err = await response.json()
+          alert(err.detail || 'Failed to delete project')
+        }
+      } catch (e) {
+        console.error('Error deleting project:', e)
+        alert('Error deleting project')
+      }
     }
   }
 
@@ -47,7 +64,7 @@ function ProfileCard({ profile, onUpdate, onUpload, onShowFiles }) {
             className="show-project-files-btn"
             onClick={() => onShowFiles && onShowFiles(profile)}
           >
-            Browse Project Files
+            Manage Project
           </button>
         </div>
 

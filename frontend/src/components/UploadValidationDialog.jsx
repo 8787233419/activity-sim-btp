@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import ConfigUploadStep from './ConfigUploadStep'
 import FileUploadStep from './FileUploadStep'
 import ValidationStep from './ValidationStep'
-import { saveFilesToProfile } from '../utils/fileStorage'
 import './UploadValidationDialog.css'
 
 function UploadValidationDialog({ profileId, profileName, onClose, onSuccess }) {
@@ -12,6 +11,7 @@ function UploadValidationDialog({ profileId, profileName, onClose, onSuccess }) 
   const [validationResults, setValidationResults] = useState({})
   const [isValidating, setIsValidating] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
+  const [isRunning, setIsRunning] = useState(false)
   const [allValid, setAllValid] = useState(false)
   const [error, setError] = useState(null)
   const [existingFiles, setExistingFiles] = useState({ configs: [], data: [], data_model: [] })
@@ -168,18 +168,19 @@ function UploadValidationDialog({ profileId, profileName, onClose, onSuccess }) 
   }
 
   const handleSaveAndClose = async () => {
+    setIsRunning(true);
     try {
       const response = await fetch(`/api/projects/${profileId}/execute`, { method: 'POST' });
       if (!response.ok) {
         throw new Error('Failed to start model execution');
       }
       const data = await response.json();
-      await saveFilesToProfile(profileId, files);
-      alert('Model simulation started successfully!');
+
       onSuccess(data.execution_id);
     } catch (err) {
       console.error(err);
       alert('Error starting model: ' + err.message);
+      setIsRunning(false);
     }
   }
 
@@ -299,6 +300,7 @@ function UploadValidationDialog({ profileId, profileName, onClose, onSuccess }) 
                 files={files}
                 validationResults={validationResults}
                 isValidating={isValidating || isUploading}
+                isRunning={isRunning}
                 allValid={allValid}
                 onValidate={handleValidate}
                 onReupload={handleReupload}

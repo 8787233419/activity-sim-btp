@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { createProfileFolder } from '../utils/fileStorage'
 import './CreateProfileDialog.css'
 
 function CreateProfileDialog({ onClose, onSuccess }) {
@@ -30,9 +29,7 @@ function CreateProfileDialog({ onClose, onSuccess }) {
 
       const data = await response.json()
       console.log('Project created:', data)
-      
-      // Use the project ID from the backend
-      createProfileFolder(profileName, data.project.id)
+
       onSuccess()
     } catch (error) {
       console.error('Error creating project:', error)

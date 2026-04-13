@@ -4,8 +4,7 @@ import ProfileCard from './components/ProfileCard'
 import UploadValidationDialog from './components/UploadValidationDialog'
 import ProjectFilesDialog from './components/ProjectFilesDialog'
 import SimulationProgressDialog from './components/SimulationProgressDialog'
-import { getProfiles } from './utils/fileStorage'
-import companyLogo from '../logo4.jpg'
+import companyLogo from '../logo.png'
 import './App.css'
 
 function App() {
@@ -19,9 +18,21 @@ function App() {
     loadProfiles()
   }, [])
 
-  const loadProfiles = () => {
-    const profileList = getProfiles()
-    setProfiles(profileList)
+  const loadProfiles = async () => {
+    try {
+      const response = await fetch('/api/projects');
+      if (response.ok) {
+        const data = await response.json();
+        const apiProfiles = data.projects.map(p => ({
+          id: p.id,
+          name: p.name,
+          createdAt: p.created_at
+        }));
+        setProfiles(apiProfiles);
+      }
+    } catch (err) {
+      console.error('Error loading profiles:', err);
+    }
   }
 
   const handleCreateProfile = () => {
@@ -46,6 +57,14 @@ function App() {
     }
   }
 
+  const handleRunModel = (executionId) => {
+    const prof = browsingProfile
+    setBrowsingProfile(null)
+    if (executionId && prof) {
+      setActiveSimulation({ projectId: prof.id, projectName: prof.name, executionId })
+    }
+  }
+
   const handleShowFiles = (profile) => {
     setBrowsingProfile(profile)
   }
@@ -56,7 +75,7 @@ function App() {
         <div className="company-logo-placeholder">
           <img src={companyLogo} alt="ActivitySim Logo" className="company-logo-img" />
         </div>
-        <h2 className="company-name">ActivitySim</h2>
+        <h2 className="company-name">Mobility Activity Engine</h2>
       </div>
 
       <div className="app-header">
@@ -105,6 +124,7 @@ function App() {
           projectId={browsingProfile.id}
           projectName={browsingProfile.name}
           onClose={() => setBrowsingProfile(null)}
+          onRunModel={handleRunModel}
         />
       )}
 

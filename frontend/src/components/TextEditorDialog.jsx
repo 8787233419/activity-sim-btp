@@ -61,14 +61,15 @@ function TextEditorDialog({ file, onClose, onSave }) {
               className="text-editor-textarea"
               value={content}
               onChange={(e) => setContent(e.target.value)}
+              readOnly={!onSave}
               spellCheck="false"
             />
           )}
         </div>
 
         <div className="text-editor-footer">
-          <button type="button" className="btn-secondary" onClick={onClose}>Cancel</button>
-          <button type="button" className="btn-primary" onClick={handleSave} disabled={loading}>Save & Close</button>
+          <button type="button" className="btn-secondary" onClick={onClose}>{onSave ? 'Cancel' : 'Close Viewer'}</button>
+          {onSave && <button type="button" className="btn-primary" onClick={handleSave} disabled={loading}>Save & Close</button>}
         </div>
       </div>
     </div>

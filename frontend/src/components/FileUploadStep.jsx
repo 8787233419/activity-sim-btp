@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import './FileUploadStep.css'
 import CsvEditorDialog from './CsvEditorDialog'
 import TextEditorDialog from './TextEditorDialog'
+import OmxViewerDialog from './OmxViewerDialog'
 
 // All recognised file-type options the user can choose from
 const KNOWN_FILE_TYPES = [
@@ -165,25 +166,6 @@ function FileUploadStep({ files, slots, existingFiles = [], onFilesSelected }) {
                 {file ? (
                   <div className="file-selected" style={{ gap: '1rem' }}>
                     <span className="file-name">✓ {file.name}</span>
-                    {file.name.toLowerCase().endsWith('.csv') ? (
-                      <button
-                        type="button"
-                        className="btn-secondary edit-csv-btn"
-                        style={{ marginLeft: '1rem', padding: '0.2rem 0.6rem', fontSize: '0.8rem' }}
-                        onClick={() => { setEditingFileKey(key); setEditingType('csv'); }}
-                      >
-                        Edit
-                      </button>
-                    ) : (!file.name.toLowerCase().endsWith('.h5') && !file.name.toLowerCase().endsWith('.zip') && (
-                      <button
-                        type="button"
-                        className="btn-secondary"
-                        style={{ marginLeft: '1rem', padding: '0.2rem 0.6rem', fontSize: '0.8rem' }}
-                        onClick={() => { setEditingFileKey(key); setEditingType('text'); }}
-                      >
-                        Edit
-                      </button>
-                    ))}
                     <button
                       type="button"
                       className="remove-btn"
@@ -242,27 +224,6 @@ function FileUploadStep({ files, slots, existingFiles = [], onFilesSelected }) {
 
       {available.length === 0 && slots.length > 0 && (
         <p className="all-added-note">All available file types have been added.</p>
-      )}
-
-      {editingFileKey && files[editingFileKey] && editingType === 'csv' && (
-        <CsvEditorDialog
-          file={files[editingFileKey]}
-          onClose={() => setEditingFileKey(null)}
-          onSave={(newFile) => {
-            onFilesSelected({ ...files, [editingFileKey]: newFile }, slots)
-            setEditingFileKey(null)
-          }}
-        />
-      )}
-      {editingFileKey && files[editingFileKey] && editingType === 'text' && (
-        <TextEditorDialog
-          file={files[editingFileKey]}
-          onClose={() => setEditingFileKey(null)}
-          onSave={(newFile) => {
-            onFilesSelected({ ...files, [editingFileKey]: newFile }, slots)
-            setEditingFileKey(null)
-          }}
-        />
       )}
     </div>
   )

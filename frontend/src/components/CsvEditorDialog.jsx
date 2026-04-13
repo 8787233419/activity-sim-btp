@@ -105,8 +105,8 @@ function CsvEditorDialog({ file, onClose, onSave }) {
 
         <div className="csv-editor-body">
           <div className="csv-editor-toolbar">
-            <button type="button" className="btn-secondary" onClick={handleAddRow}>+ Add Row</button>
-            <span className="csv-editor-hint">Double click any cell to edit</span>
+            {onSave && <button type="button" className="btn-secondary" onClick={handleAddRow}>+ Add Row</button>}
+            <span className="csv-editor-hint">{onSave ? 'Double click any cell to edit' : 'Read-only view'}</span>
           </div>
           {errorMsg ? (
             <div className="csv-editor-loading" style={{ color: '#ef4444' }}>{errorMsg}</div>
@@ -120,7 +120,7 @@ function CsvEditorDialog({ file, onClose, onSave }) {
                 columnDefs={colDefs}
                 stopEditingWhenCellsLoseFocus={true}
                 defaultColDef={{
-                  editable: true,
+                  editable: !!onSave,
                   sortable: true,
                   filter: true,
                   resizable: true,
@@ -133,8 +133,8 @@ function CsvEditorDialog({ file, onClose, onSave }) {
         </div>
 
         <div className="csv-editor-footer">
-          <button type="button" className="btn-secondary" onClick={onClose}>Cancel</button>
-          <button type="button" className="btn-primary" onClick={handleSave} disabled={loading}>Save & Close</button>
+          <button type="button" className="btn-secondary" onClick={onClose}>{onSave ? 'Cancel' : 'Close Viewer'}</button>
+          {onSave && <button type="button" className="btn-primary" onClick={handleSave} disabled={loading}>Save & Close</button>}
         </div>
       </div>
     </div>
