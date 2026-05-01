@@ -29,7 +29,7 @@ Copy your CSV files from your ActivitySim data directory to the project:
 - `land_use.csv`
 - Any network/skim files
 
-**Copy to**: `C:\Users\ayush\btp\activitysim-frontend\backend\projects\{project_id}\data\`
+**Copy to**: `C:\Users\ayush\btp\activitysim-app\backend\projects\{project_id}\data\`
 
 Or upload via API:
 ```bash
@@ -49,13 +49,13 @@ The project already has `input_checker.yaml` and `input_checks.py` copied from t
 ```bash
 # From your ActivitySim installation
 copy "C:\Users\ayush\btp\activitysim\activitysim\examples\{your_example}\configs\input_checker.yaml" ^
-     "C:\Users\ayush\btp\activitysim-frontend\backend\projects\{project_id}\configs\input_checker.yaml"
+     "C:\Users\ayush\btp\activitysim-app\backend\projects\{project_id}\configs\input_checker.yaml"
 
 copy "C:\Users\ayush\btp\activitysim\activitysim\examples\{your_example}\data_model\input_checks.py" ^
-     "C:\Users\ayush\btp\activitysim-frontend\backend\projects\{project_id}\data_model\input_checks.py"
+     "C:\Users\ayush\btp\activitysim-app\backend\projects\{project_id}\data_model\input_checks.py"
 
 copy "C:\Users\ayush\btp\activitysim\activitysim\examples\{your_example}\data_model\enums.py" ^
-     "C:\Users\ayush\btp\activitysim-frontend\backend\projects\{project_id}\data_model\enums.py"
+     "C:\Users\ayush\btp\activitysim-app\backend\projects\{project_id}\data_model\enums.py"
 ```
 
 2. Or modify the existing files in the project's `data_model/` directory
@@ -66,7 +66,7 @@ Copy your `settings.yaml`:
 
 ```bash
 copy "C:\Users\ayush\btp\activitysim\activitysim\examples\{your_example}\configs\settings.yaml" ^
-     "C:\Users\ayush\btp\activitysim-frontend\backend\projects\{project_id}\configs\settings.yaml"
+     "C:\Users\ayush\btp\activitysim-app\backend\projects\{project_id}\configs\settings.yaml"
 ```
 
 **Important settings to verify**:
@@ -81,7 +81,7 @@ ActivitySim needs many config files. Copy all from your example:
 
 ```bash
 xcopy "C:\Users\ayush\btp\activitysim\activitysim\examples\{your_example}\configs\*" ^
-      "C:\Users\ayush\btp\activitysim-frontend\backend\projects\{project_id}\configs\" /E /Y
+      "C:\Users\ayush\btp\activitysim-app\backend\projects\{project_id}\configs\" /E /Y
 ```
 
 This includes:
@@ -176,13 +176,13 @@ set PROJECT_ID=project_1739294400
 set EXAMPLE_DIR=C:\Users\ayush\btp\activitysim\activitysim\examples\prototype_mtc_extended
 
 # Copy all configs
-xcopy "%EXAMPLE_DIR%\configs\*" "C:\Users\ayush\btp\activitysim-frontend\backend\projects\%PROJECT_ID%\configs\" /E /Y
+xcopy "%EXAMPLE_DIR%\configs\*" "C:\Users\ayush\btp\activitysim-app\backend\projects\%PROJECT_ID%\configs\" /E /Y
 
 # Copy all data
-xcopy "%EXAMPLE_DIR%\data\*" "C:\Users\ayush\btp\activitysim-frontend\backend\projects\%PROJECT_ID%\data\" /E /Y
+xcopy "%EXAMPLE_DIR%\data\*" "C:\Users\ayush\btp\activitysim-app\backend\projects\%PROJECT_ID%\data\" /E /Y
 
 # Copy data model
-xcopy "%EXAMPLE_DIR%\data_model\*" "C:\Users\ayush\btp\activitysim-frontend\backend\projects\%PROJECT_ID%\data_model\" /E /Y
+xcopy "%EXAMPLE_DIR%\data_model\*" "C:\Users\ayush\btp\activitysim-app\backend\projects\%PROJECT_ID%\data_model\" /E /Y
 ```
 
 Then use the API to validate and run!

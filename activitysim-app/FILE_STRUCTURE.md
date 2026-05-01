@@ -1,7 +1,7 @@
 # File Structure - ActivitySim Frontend
 
 ```
-activitysim-frontend/                    # Root project directory
+activitysim-app/                    # Root project directory
 │
 ├── 📂 backend/                          # Python FastAPI backend
 │   ├── main.py                          # ⭐ Main FastAPI application (400+ lines)
@@ -330,7 +330,7 @@ GET    /health                          → Health check
 
 Everything is ready! To start:
 
-1. cd activitysim-frontend
+1. cd activitysim-app
 2. docker-compose up --build
 3. Open http://localhost:3000
 

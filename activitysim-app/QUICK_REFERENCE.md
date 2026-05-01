@@ -4,14 +4,14 @@
 
 ### Windows
 ```bash
-cd activitysim-frontend
+cd activitysim-app
 setup.bat
 # Opens http://localhost:3000 automatically
 ```
 
 ### Linux/Mac
 ```bash
-cd activitysim-frontend
+cd activitysim-app
 chmod +x setup.sh
 ./setup.sh
 # Opens http://localhost:3000 automatically
@@ -19,7 +19,7 @@ chmod +x setup.sh
 
 ### Or Use Docker Directly
 ```bash
-cd activitysim-frontend
+cd activitysim-app
 docker-compose up --build
 ```
 
@@ -129,7 +129,7 @@ npm run dev
 ## Project Structure
 
 ```
-activitysim-frontend/
+activitysim-app/
 ├── backend/
 │   ├── main.py              ← Edit to add features
 │   ├── requirements.txt
@@ -239,8 +239,8 @@ Edit `backend/main.py` `simulate_run()` function to call real ActivitySim instea
 
 ### Docker Hub
 ```bash
-docker build -t myusername/activitysim-frontend .
-docker push myusername/activitysim-frontend
+docker build -t myusername/activitysim-app .
+docker push myusername/activitysim-app
 ```
 
 ### AWS

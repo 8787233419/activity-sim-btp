@@ -9,7 +9,7 @@ I have created a **complete, production-ready web frontend** for ActivitySim wit
 ## 📦 Project Structure
 
 ```
-activitysim-frontend/
+activitysim-app/
 │
 ├── 📂 backend/
 │   ├── main.py                 # FastAPI server (all endpoints)
@@ -378,7 +378,7 @@ projects/
 # Push to ECR
 aws ecr get-login-password | docker login --username AWS --password-stdin <account>.dkr.ecr.<region>.amazonaws.com
 
-docker tag activitysim-frontend:latest <account>.dkr.ecr.<region>.amazonaws.com/activitysim:latest
+docker tag activitysim-app:latest <account>.dkr.ecr.<region>.amazonaws.com/activitysim:latest
 docker push <account>.dkr.ecr.<region>.amazonaws.com/activitysim:latest
 
 # Deploy using ECS/EKS
@@ -398,7 +398,7 @@ git push heroku main
 ### Deploy to Cloud Run
 
 ```bash
-gcloud run deploy activitysim-frontend \
+gcloud run deploy activitysim-app \
   --source . \
   --platform managed \
   --region us-central1
@@ -464,7 +464,7 @@ gcloud run deploy activitysim-frontend \
 
 **Right now, you can:**
 
-1. Copy entire `activitysim-frontend/` folder to your workspace
+1. Copy entire `activitysim-app/` folder to your workspace
 2. Run `docker-compose up --build`
 3. Open http://localhost:3000
 4. Start creating projects and running simulations!

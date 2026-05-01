@@ -45,7 +45,7 @@
 ├────────────────────────────────────────────────────────────────────────────────┤
 │                                                                                │
 │  Step 1: Navigate to project                                                  │
-│  $ cd activitysim-frontend                                                     │
+│  $ cd activitysim-app                                                     │
 │                                                                                │
 │  Step 2: Run setup (Windows)                                                  │
 │  $ setup.bat                                                                   │
@@ -105,7 +105,7 @@
 │ 📁 PROJECT STRUCTURE                                                            │
 ├────────────────────────────────────────────────────────────────────────────────┤
 │                                                                                │
-│  activitysim-frontend/                                                         │
+│  activitysim-app/                                                         │
 │  ├── backend/                                                                  │
 │  │   ├── main.py                    ← FastAPI server (~400 lines)            │
 │  │   ├── requirements.txt                                                     │

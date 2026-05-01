@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C \"c:/Users/ayush/btp/activity-sim-btp\" mv activitysim-frontend activitysim-app)",
+      "Bash(git -C \"c:/Users/ayush/btp/activity-sim-btp\" status --short)"
+    ]
+  }
+}
